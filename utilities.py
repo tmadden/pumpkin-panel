@@ -2,6 +2,8 @@ import asyncio
 import math
 import time
 
+from pywizlight.rgbcw import rgb2rgbcw
+
 def index(p):
     return p[0] * 4 + p[1]
 
@@ -38,11 +40,20 @@ class PeriodicLoop:
             return self.next_frame_time >= self.finish_time
         return False
 
-def rgb(r, g, b):
+def raw_rgb(r, g, b):
     return {'r': r, 'g': g, 'b': b}
 
+def rgb(r, g, b):
+    rgb, cw = rgb2rgbcw((r, g, b))
+    red, green, blue = rgb
+    state = {'r': r, 'g': g, 'b': b}
+    if cw:
+        state['c'] = cw
+        state['w'] = cw
+    return state
+
 def color(c):
-    return {'r': round(c.red * 255), 'g': round(c.green * 255), 'b': round(c.blue * 255)}
+    return rgb(round(c.red * 255), round(c.green * 255), round(c.blue * 255))
 
 on = {'c': 255, 'w': 255}
 off = None
