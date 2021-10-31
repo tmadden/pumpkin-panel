@@ -3,7 +3,7 @@ import math
 import time
 
 def index(p):
-    return p[1] * 4 + p[0]
+    return p[0] * 4 + p[1]
 
 def in_bounds(p):
     return p[0] >= 0 and p[0] < 4 and p[1] >= 0 and p[1] < 4
