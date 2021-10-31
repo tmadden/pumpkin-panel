@@ -2,6 +2,7 @@ import yaml
 import asyncio
 import time
 import random
+from utilities import reset_all
 
 from light import Light
 
@@ -11,6 +12,8 @@ from patterns import all_patterns, active_pattern
 async def control_loop(lights):
     if active_pattern:
         await active_pattern(lights)
+        reset_all(lights)
+        await asyncio.sleep(1)
     else:
         while True:
             for pattern in all_patterns:
