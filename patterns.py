@@ -1,6 +1,7 @@
 import asyncio
 import time
 import random
+from colour import Color
 
 from utilities import *
 
@@ -14,10 +15,8 @@ async def ramp_up(lights):
 
     indices = [15, 11, 7, 3]
 
-    index = 0
-    while True:
+    for index in range(16):
         count = index % 5
-        index += 1
         for i in range(4):
             if i < count:
                 lights[indices[i]].set_state(on)
@@ -31,9 +30,9 @@ async def snake(lights):
     snake = []
     just_turned = False
 
-    loop = PeriodicLoop(0.25)
+    loop = PeriodicLoop(0.25, 20)
 
-    while True:
+    while not loop.done():
         while True:
             if just_turned:
                 new_direction = direction
@@ -69,4 +68,33 @@ async def snake(lights):
 
         await loop.next()
 
-active_pattern = snake
+async def pulsate_skeleton(lights):
+    for index in range(16):
+        lights[(index % 16)].set_state(off)
+
+    colors = list(Color("red").range_to(Color("blue"), 20))
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors += list(Color("blue").range_to(Color("red"), 20))
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+    colors.append(colors[-1])
+
+    loop = PeriodicLoop(0.05, 10)
+
+    index = 0
+    while not loop.done():
+        lights[1].set_state(color(colors[index % len(colors)]))
+        index += 1
+        await loop.next()
+
+all_patterns = [ramp_up, snake, pulsate_skeleton]
+
+active_pattern = None # pulsate_skeleton

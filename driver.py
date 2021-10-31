@@ -5,7 +5,17 @@ import random
 
 from light import Light
 
-from patterns import active_pattern
+from patterns import all_patterns, active_pattern
+
+
+async def control_loop(lights):
+    if active_pattern:
+        await active_pattern(lights)
+    else:
+        while True:
+            for pattern in all_patterns:
+                await pattern(lights)
+
 
 async def main():
     with open("ips.yml", "r") as file:
@@ -15,24 +25,8 @@ async def main():
 
     await asyncio.gather(*[light.connect() for light in lights])
 
-    try:
-        await asyncio.wait_for(
-            asyncio.gather(active_pattern(lights),
-                           *[light.comm_loop() for light in lights]), 20)
-    except asyncio.TimeoutError:
-        pass
-
-    async def reset_loop():
-        for light in lights:
-            light.set_state(None)
-        await asyncio.sleep(1)
-
-    try:
-        await asyncio.wait_for(
-            asyncio.gather(reset_loop(),
-                           *[light.comm_loop() for light in lights]), 1)
-    except asyncio.TimeoutError:
-        pass
+    await asyncio.gather(control_loop(lights),
+                         *[light.comm_loop() for light in lights])
 
 
 loop = asyncio.get_event_loop()
