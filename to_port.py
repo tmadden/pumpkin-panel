@@ -1,18 +1,13 @@
-import yaml
-import asyncio
-import time
-import random
+# async def active_pattern(lights):
+#     next_frame_time = time.perf_counter()
+#     for index in range(16):
+#         lights[index].set_state(off)
+#     while True:
+#         lights[0].set_state(255)
 
-from light import Light
-
-
-async def main():
-    with open("ips.yml", "r") as file:
-        ips = yaml.safe_load(file)
-
-    lights = [Light(ip) for ip in ips]
-
-    await asyncio.gather(*[light.connect() for light in lights])
+#         next_frame_time += 0.1
+#         now = time.perf_counter()
+#         await asyncio.sleep(next_frame_time - now)
 
     # await asyncio.gather(*[
     #     light.turn_on(
@@ -64,55 +59,42 @@ async def main():
     #             PilotBuilder(rgb=(255, 255, 255), brightness=20))
     #     else:
     #         return light.turn_off()
-    def index(p):
-        return p[1] * 4 + p[0]
 
-    def in_bounds(p):
-        return p[0] >= 0 and p[0] < 4 and p[1] >= 0 and p[1] < 4
+from operator import add
 
-    def flipped(v):
-        return [-v[0], -v[1]]
+# async def active_pattern(lights):
+#     next_frame_time = time.perf_counter()
+#     head = [0, 0]
+#     direction = [1, 0]
+#     snake = []
+#     just_turned = False
+#     for i in range(1000):
+#         while True:
+#             if just_turned:
+#                 new_direction = direction
+#                 just_turned = False
+#             else:
+#                 new_direction = random.choice([[-1, 0], [1, 0], [0, -1],
+#                                                 [0, 1]])
+#                 if equal(new_direction, flipped(direction)):
+#                     continue
+#             new_head = list(map(add, head, new_direction))
+#             if not in_bounds(new_head):
+#                 continue
+#             if lights[index(new_head)].get_state():
+#                 continue
+#             break
 
-    import math
+#         just_turned = not equal(direction, new_direction)
 
-    def equal(a, b):
-        return round(a[0]) == round(b[0]) and round(a[1]) == round(b[1])
+#         lights[index(head)].set_state(None)
+#         lights[index(new_head)].set_state(100)
 
-    from operator import add
+#         head, direction = new_head, new_direction
 
-    # async def control_loop():
-    #     next_frame_time = time.perf_counter()
-    #     head = [0, 0]
-    #     direction = [1, 0]
-    #     snake = []
-    #     just_turned = False
-    #     for i in range(1000):
-    #         while True:
-    #             if just_turned:
-    #                 new_direction = direction
-    #                 just_turned = False
-    #             else:
-    #                 new_direction = random.choice([[-1, 0], [1, 0], [0, -1],
-    #                                                [0, 1]])
-    #                 if equal(new_direction, flipped(direction)):
-    #                     continue
-    #             new_head = list(map(add, head, new_direction))
-    #             if not in_bounds(new_head):
-    #                 continue
-    #             if lights[index(new_head)].get_state():
-    #                 continue
-    #             break
-
-    #         just_turned = not equal(direction, new_direction)
-
-    #         lights[index(head)].set_state(None)
-    #         lights[index(new_head)].set_state(100)
-
-    #         head, direction = new_head, new_direction
-
-    #         next_frame_time += 0.5
-    #         now = time.perf_counter()
-    #         await asyncio.sleep(next_frame_time - now)
+#         next_frame_time += 0.5
+#         now = time.perf_counter()
+#         await asyncio.sleep(next_frame_time - now)
 
     # async def control_loop():
     #     next_frame_time = time.perf_counter()
@@ -175,33 +157,24 @@ async def main():
     #         next_frame_time += 0.1
     #         now = time.perf_counter()
     #         await asyncio.sleep(next_frame_time - now)
-    # async def control_loop():
-    #     next_frame_time = time.perf_counter()
-    #     index = 0
-    #     while True:
-    #         lights[index].set_state(None)
-    #         index += 4
-    #         if index == 19:
-    #             index = 0
-    #         if index > 15:
-    #             index -= 15
-    #         lights[index].set_state(100)
-    #         next_frame_time += 0.1
-    #         now = time.perf_counter()
-    #         await asyncio.sleep(next_frame_time - now)
-    async def control_loop():
-        next_frame_time = time.perf_counter()
-        index = 0
-        while True:
-            lights[index % 16].set_state(100)
-            lights[(index - 4) % 16].set_state(80)
-            lights[(index - 5) % 16].set_state(50)
-            lights[(index - 6) % 16].set_state(20)
-            lights[(index - 7) % 16].set_state(None)
-            index += 1
-            next_frame_time += 0.1
-            now = time.perf_counter()
-            await asyncio.sleep(next_frame_time - now)
+
+# async def active_pattern(lights):
+#     next_frame_time = time.perf_counter()
+#     index = 0
+#     indices = [1, 2, 3, 4]
+#     while True:
+#         lights[indices.pop(0)].set_state(None)
+#         index += 4
+#         if index == 19:
+#             index = 0
+#         if index > 15:
+#             index -= 15
+#         lights[index].set_state(255)
+#         indices.append(index)
+#         next_frame_time += 0.1
+#         now = time.perf_counter()
+#         await asyncio.sleep(next_frame_time - now)
+
 
     # async def control_loop():
     #     next_frame_time = time.perf_counter()
@@ -218,24 +191,6 @@ async def main():
     #         next_frame_time += 0.845
     #         now = time.perf_counter()
     #         await asyncio.sleep(next_frame_time - now)
-    async def reset_loop():
-        for light in lights:
-            light.set_state(None)
-        await asyncio.sleep(1)
-
-    try:
-        await asyncio.wait_for(
-            asyncio.gather(control_loop(),
-                           *[light.comm_loop() for light in lights]), 20)
-    except asyncio.TimeoutError:
-        pass
-
-    try:
-        await asyncio.wait_for(
-            asyncio.gather(reset_loop(),
-                           *[light.comm_loop() for light in lights]), 1)
-    except asyncio.TimeoutError:
-        pass
 
     # print(datetime.datetime.now())
 
@@ -293,7 +248,3 @@ async def main():
     #bulb2 = wizlight("<your bulb2 ip>")
     #await asyncio.gather(bulb1.turn_on(PilotBuilder(brightness = 255)),
     #    bulb2.turn_on(PilotBuilder(warm_white = 255)), loop = loop)
-
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
