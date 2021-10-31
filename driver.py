@@ -6,11 +6,19 @@ from utilities import reset_all
 
 from light import Light
 
-from patterns import all_patterns, active_pattern
+from patterns.connect_four import connect_four
+from patterns.progression import progression
+from patterns.pulsate import pulsate
+from patterns.ramp_up import ramp_up
+from patterns.snake import snake
+
+all_patterns = [connect_four, progression, pulsate, ramp_up, snake]
+
+test_pattern = None
 
 
 async def control_loop(lights):
-    if active_pattern:
+    if test_pattern:
         await active_pattern(lights)
         reset_all(lights)
         await asyncio.sleep(1)
