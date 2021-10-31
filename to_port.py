@@ -60,8 +60,6 @@
     #     else:
     #         return light.turn_off()
 
-from operator import add
-
 # async def active_pattern(lights):
 #     next_frame_time = time.perf_counter()
 #     head = [0, 0]
@@ -96,45 +94,6 @@ from operator import add
 #         now = time.perf_counter()
 #         await asyncio.sleep(next_frame_time - now)
 
-    # async def control_loop():
-    #     next_frame_time = time.perf_counter()
-    #     head = [0, 0]
-    #     direction = [1, 0]
-    #     snake = []
-    #     just_turned = False
-    #     for i in range(1000):
-    #         while True:
-    #             if just_turned:
-    #                 new_direction = direction
-    #                 just_turned = False
-    #             else:
-    #                 new_direction = random.choice([[-1, 0], [1, 0], [0, -1],
-    #                                                [0, 1]])
-    #                 if equal(new_direction, flipped(direction)):
-    #                     continue
-    #             new_head = list(map(add, head, new_direction))
-    #             if not in_bounds(new_head):
-    #                 continue
-    #             if lights[index(new_head)].get_state():
-    #                 continue
-    #             break
-
-    #         just_turned = not equal(direction, new_direction)
-
-    #         head, direction = new_head, new_direction
-    #         snake.append(head)
-
-    #         for i in range(4):
-    #             if len(snake) > i:
-    #                 lights[index(snake[-i])].set_state(100)
-
-    #         if len(snake) > 4:
-    #             tail = snake.pop(0)
-    #             lights[index(tail)].set_state(None)
-
-    #         next_frame_time += 0.15
-    #         now = time.perf_counter()
-    #         await asyncio.sleep(next_frame_time - now)
 
     # async def control_loop():
     #     next_frame_time = time.perf_counter()

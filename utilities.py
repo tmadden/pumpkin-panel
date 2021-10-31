@@ -14,6 +14,10 @@ def flipped(v):
 def equal(a, b):
     return round(a[0]) == round(b[0]) and round(a[1]) == round(b[1])
 
+def reset_all(lights):
+    for light in lights:
+        light.set_state(off)
+
 
 class PeriodicLoop:
     def __init__(self, period):
@@ -26,5 +30,8 @@ class PeriodicLoop:
         await asyncio.sleep(self.next_frame_time - now)
 
 
-on = 255
+def rgb(r, g, b):
+    return {'r': r, 'g': g, 'b': b}
+
+on = {'c': 255, 'w': 255}
 off = None
