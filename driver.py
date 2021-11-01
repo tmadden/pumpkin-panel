@@ -7,12 +7,12 @@ from utilities import reset_all
 from light import Light
 
 from patterns.connect_four import connect_four
-from patterns.progression import progression
-from patterns.pulsate import pulsate
 from patterns.ramp_up import ramp_up
+from patterns.progression import progression
 from patterns.snake import snake
-
-all_patterns = [connect_four, progression, pulsate, ramp_up, snake]
+from patterns.pulsate import pulsate
+from patterns.ferris import ferris
+from patterns.tictac import tictactoe
 
 test_pattern = None
 
@@ -24,7 +24,9 @@ async def control_loop(lights):
         await asyncio.sleep(1)
     else:
         while True:
+            all_patterns = [connect_four, progression, ramp_up, pulsate, progression, ferris] * 2 + [tictactoe]
             for pattern in all_patterns:
+                reset_all(lights)
                 await pattern(lights)
 
 

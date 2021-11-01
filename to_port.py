@@ -40,26 +40,6 @@
     #     # ])
     #     await asyncio.sleep(0.25)
 
-    # states = [False for light in lights]
-
-    # import datetime
-    # print(datetime.datetime.now())
-
-    # colors = [(255, 0, 0), (255, 255, 255)]
-    # for i in range(10):
-    #     await asyncio.gather(
-    #         *[
-    #             light.turn_on(PilotBuilder(rgb=colors[i % 2]))
-    #             for light in lights
-    #         ], asyncio.sleep(0.5))
-
-    # def update_light(light, state):
-    #     if state:
-    #         return light.turn_on(
-    #             PilotBuilder(rgb=(255, 255, 255), brightness=20))
-    #     else:
-    #         return light.turn_off()
-
 # async def active_pattern(lights):
 #     next_frame_time = time.perf_counter()
 #     head = [0, 0]
@@ -150,60 +130,3 @@
     #         next_frame_time += 0.845
     #         now = time.perf_counter()
     #         await asyncio.sleep(next_frame_time - now)
-
-    # print(datetime.datetime.now())
-
-    # await asyncio.sleep(1)
-
-    # await asyncio.gather(*[light.turn_off() for light in lights])
-
-    # # Turn on the light into "rhythm mode"
-    #
-    # # Set bulb brightness
-    # await light.turn_on(PilotBuilder(brightness=255))
-
-    # # Set bulb brightness (with async timeout)
-    # timeout = 10
-    # await asyncio.wait_for(light.turn_on(PilotBuilder(brightness=255)),
-    #                        timeout)
-
-    # # Set bulb to warm white
-    # await light.turn_on(PilotBuilder(warm_white=255))
-
-    # # Set RGB values
-    # # red to 0 = 0%, green to 128 = 50%, blue to 255 = 100%
-    # await light.turn_on(PilotBuilder(rgb=(0, 128, 255)))
-
-    # # Get the current color temperature, RGB values
-    # state = await light.updateState()
-    # print(state.get_colortemp())
-    # red, green, blue = state.get_rgb()
-    # print(f"red {red}, green {green}, blue {blue}")
-
-    # # Start a scene
-    # await light.turn_on(PilotBuilder(scene=4))  # party
-
-    # # Get the name of the current scene
-    # state = await light.updateState()
-    # print(state.get_scene())
-
-    # # # Get the features of the bulb
-    # bulb_type = await lights[0].get_bulbtype()
-    # print(bulb_type.features.brightness
-    #       )  # returns true if brightness is supported
-    # print(bulb_type.features.color)  # returns true if color is supported
-    # print(bulb_type.features.color_tmp
-    #       )  # returns true if color temperatures are supported
-    # print(bulb_type.features.effect)  # returns true if effects are supported
-    # print(bulb_type.kelvin_range.max)  # returns max kelvin in in INT
-    # print(bulb_type.kelvin_range.min)  # returns min kelvin in in INT
-    # print(bulb_type.name)  # returns the module name of the bulb
-
-    # # Turns the light off
-    # await light.turn_off()
-
-    # Do operations on multiple lights parallely
-    #bulb1 = wizlight("<your bulb1 ip>")
-    #bulb2 = wizlight("<your bulb2 ip>")
-    #await asyncio.gather(bulb1.turn_on(PilotBuilder(brightness = 255)),
-    #    bulb2.turn_on(PilotBuilder(warm_white = 255)), loop = loop)

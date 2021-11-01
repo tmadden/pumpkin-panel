@@ -14,7 +14,7 @@ async def connect_four(lights):
         depth: int
         color: ...
 
-    colors = [on, rgb(255, 0, 0), rgb(255, 255, 128), {'c': 255}]
+    colors = [{'w': 255}, rgb(255, 0, 0), rgb(255, 0, 255), {'c': 255}]
 
     loop = PeriodicLoop(0.4)
 
