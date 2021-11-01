@@ -8,18 +8,28 @@ from utilities import *
 from operator import add
 
 async def pulsate(lights):
-    colors = list(Color("red").range_to(Color("blue"), 6))
+    colors = list(Color("red").range_to(Color("yellow"), 12))
     for i in range(4):
         colors.append(colors[-1])
-    colors += list(Color("blue").range_to(Color("red"), 6))
+    colors += list(Color("yellow").range_to(Color("red"), 12))
     for i in range(4):
         colors.append(colors[-1])
 
-    loop = PeriodicLoop(0.2, 10)
-
-    index = 0
-    while not loop.done():
-        for light in lights:
-            light.set_state(color(colors[index % len(colors)]))
-        index += 1
-        await loop.next()
+    while True:
+        i = random.choice(range(16))
+        j = i
+        while i == j:
+            j = random.choice(range(16))
+        loop = PeriodicLoop(0.1)
+        # for b in range(6):
+        #     for k in [i, j]:
+        #         lights[k].set_state(dim(color(colors[0]), b * 40))
+        for c in colors:
+            for k in [i, j]:
+                lights[k].set_state(color(c))
+            await loop.next()
+        # for b in range(6):
+        #     for k in [i, j]:
+        #         lights[k].set_state(dim(color(colors[-1]), 255 - b * 40))
+        for k in [i, j]:
+            lights[k].set_state(off)

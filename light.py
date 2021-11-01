@@ -53,7 +53,7 @@ class Light:
         return message
 
     async def send_update(self):
-        if not self.in_sync or self.staleness >= 40:
+        if not self.in_sync: # or self.staleness >= 40:
             await self.stream.send(
                 bytes(self.generate_update_message(), "utf-8"))
             self.staleness = 0

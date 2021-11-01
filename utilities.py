@@ -55,5 +55,10 @@ def rgb(r, g, b):
 def color(c):
     return rgb(round(c.red * 255), round(c.green * 255), round(c.blue * 255))
 
+def dim(state, brightness):
+    dimmed = state.copy()
+    state['brightness'] = brightness
+    return dimmed
+
 on = {'c': 255, 'w': 255}
 off = None

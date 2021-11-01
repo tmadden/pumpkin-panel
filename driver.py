@@ -24,7 +24,7 @@ async def control_loop(lights):
         await asyncio.sleep(1)
     else:
         while True:
-            all_patterns = [connect_four, progression, ramp_up, pulsate, progression, ferris] * 2 + [tictactoe]
+            all_patterns = [pulsate] #[connect_four, progression, ramp_up, pulsate, progression, ferris] * 2 + [tictactoe]
             for pattern in all_patterns:
                 reset_all(lights)
                 await pattern(lights)
