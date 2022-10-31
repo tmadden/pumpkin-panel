@@ -1,6 +1,7 @@
 import asyncio
 import math
 import time
+from dataclasses import dataclass
 
 from pywizlight.rgbcw import rgb2rgbcw
 
@@ -95,52 +96,79 @@ def dim(c, intensity):
 on = {'c': 255, 'w': 255}
 off = None
 
-off_color = raw_rgb(32, 0, 0)
-
 cold_white = {'c': 255}
 warm_white = {'w': 255}
 
-light_gorgeous = raw_rgb(64, 0, 255)
-gorgeous = raw_rgb(160, 0, 255)
-snowy = raw_rgb(32, 32, 255)
-blue_snowy = raw_rgb(8, 8, 255)
-good_purple = raw_rgb(123, 0, 255)
-pretty = raw_rgb(255, 0, 64)
 
-snow_palette = [blue_snowy, light_gorgeous, snowy, good_purple]
+@dataclass
+class Palette:
+    off: ...
+    transition: ...
+    diverse: ...
 
-snow_diverse_palette = [
-    blue_snowy, pretty, gorgeous, light_gorgeous, good_purple
+
+the_palettes = [
+    Palette(off=raw_rgb(32, 0, 0),
+            transition=[
+                cold_white, cold_white, warm_white,
+                raw_rgb(255, 255, 255),
+                raw_rgb(255, 128, 128),
+                raw_rgb(255, 0, 0),
+                raw_rgb(128, 0, 0)
+            ],
+            diverse=[
+                raw_rgb(255, 128, 0),
+                raw_rgb(200, 0, 128),
+                raw_rgb(255, 0, 32),
+                raw_rgb(255, 0, 0)
+            ]),
+    Palette(off=raw_rgb(32, 32, 0),
+            transition=[
+                cold_white, cold_white, warm_white,
+                raw_rgb(255, 255, 255),
+                raw_rgb(255, 255, 128),
+                raw_rgb(255, 255, 0),
+                raw_rgb(128, 128, 0)
+            ],
+            diverse=[
+                raw_rgb(255, 32, 0),
+                raw_rgb(255, 128, 0),
+                raw_rgb(255, 255, 0),
+                raw_rgb(255, 192, 0),
+                raw_rgb(192, 64, 0)
+            ]),
+    Palette(off=raw_rgb(32, 0, 32),
+            transition=[
+                cold_white, cold_white, warm_white,
+                raw_rgb(255, 255, 255),
+                raw_rgb(255, 128, 255),
+                raw_rgb(255, 0, 255),
+                raw_rgb(128, 0, 128)
+            ],
+            diverse=[
+                raw_rgb(255, 0, 128),
+                raw_rgb(255, 0, 255),
+                raw_rgb(255, 0, 192),
+                raw_rgb(192, 0, 64),
+                raw_rgb(192, 0, 32)
+            ])
 ]
 
-red_palette = [raw_rgb(255, 0, 32), raw_rgb(200, 0, 128), raw_rgb(255, 0, 0)]
+active_palette = the_palettes[0]
 
-red_diverse_palette = [
-    raw_rgb(255, 128, 0), pretty,
-    raw_rgb(200, 0, 128),
-    raw_rgb(255, 0, 32),
-    raw_rgb(255, 0, 0)
-]
 
-yellow_palette = [
-    raw_rgb(255, 128, 0),
-    raw_rgb(255, 255, 0),
-    raw_rgb(255, 192, 0),
-    raw_rgb(192, 64, 0)
-]
+def off_color():
+    return active_palette.off
 
-yellow_diverse_palette = [
-    raw_rgb(255, 32, 0),
-    raw_rgb(255, 128, 0),
-    raw_rgb(255, 255, 0),
-    raw_rgb(255, 192, 0),
-    raw_rgb(192, 64, 0)
-]
 
-green_diverse_palette = [
-    raw_rgb(0, 255, 0),
-    raw_rgb(255, 255, 0),
-    raw_rgb(128, 255, 0),
-    raw_rgb(0, 255, 192),
-    raw_rgb(64, 255, 64)
-]
+def transition_colors():
+    return active_palette.transition
+
+
+def diverse_palette():
+    return active_palette.diverse
+
+
+def set_active_palette(palette):
+    global active_palette
+    active_palette = palette

@@ -2,7 +2,7 @@ import yaml
 import asyncio
 import time
 import random
-from utilities import reset_all
+from utilities import reset_all, the_palettes
 import utilities
 
 from light import Light
@@ -11,15 +11,17 @@ from patterns.connect_four import connect_four
 from patterns.progression import progression
 from patterns.snake import snake
 from patterns.pulsate import pulsate
+from patterns.rain import rain
 from patterns.sparkle import sparkle
 
-test_pattern = connect_four
+test_pattern = rain
 
 all_patterns = [progression, snake]
 
 # all_patterns = [show] + show_patterns
 
 current_pattern_index = 0
+current_palette_index = 0
 
 
 async def control_loop(lights):
@@ -40,6 +42,8 @@ async def main():
 
     lights = [Light(ip) for ip in ips]
 
+    utilities.set_active_palette(the_palettes[0])
+
     await asyncio.gather(*[light.connect() for light in lights])
 
     await asyncio.gather(control_loop(lights),
@@ -50,7 +54,8 @@ from pynput import mouse
 
 mouse_controller = mouse.Controller()
 
-last_right_click_time = None
+last_mouse_interaction_time = 0
+last_right_click_time = 0
 
 
 def on_move(x, y):
@@ -61,24 +66,26 @@ def on_move(x, y):
 
 
 def on_click(x, y, button, pressed):
+    global last_mouse_interaction_time
+    global last_right_click_time
+    global current_palette_index
+
+    current_time = time.time()
+    last_mouse_interaction_time = current_time
+
     if pressed:
         if button == mouse.Button.left:
             utilities.mouse_clicks.append(button)
         elif button == mouse.Button.right:
-            global last_right_click_time
-            global current_pattern_index
-
-            current_time = time.time()
             time_since_last_right_click = current_time - last_right_click_time
             if time_since_last_right_click < 0.3:
-                current_pattern_index = 0
+                current_palette_index = 0
             else:
-                current_pattern_index = (current_pattern_index +
-                                         1) % len(all_patterns)
+                current_palette_index = (current_palette_index +
+                                         1) % len(the_palettes)
+            utilities.set_active_palette(the_palettes[current_palette_index])
 
-            last_right_click_time = current_left
-
-            utilities.interrupt_pattern_loop = True
+            last_right_click_time = current_time
 
 
 mouse_listener = mouse.Listener(on_move=on_move,

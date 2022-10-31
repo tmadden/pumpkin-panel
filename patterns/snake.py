@@ -7,7 +7,7 @@ from operator import add
 
 
 async def snake(lights):
-    background = off_color
+    background = off_color()
 
     head = [0, 0]
     direction = [1, 0]
@@ -17,7 +17,7 @@ async def snake(lights):
     for i in range(24):
         lights[i].set_state(background)
 
-    loop = PeriodicLoop(0.15, 20)
+    loop = PeriodicLoop(0.15)
     while not loop.done():
         if len(snake) > 5:
             tail = snake.pop(0)
