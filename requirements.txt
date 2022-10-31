@@ -1,3 +1,5 @@
 pywizlight
 pyyaml
 colour
+asyncio_dgram
+pynput

@@ -12,6 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Light:
+
     def __init__(self, ip, port=38899):
         self.ip = ip
         self.port = port
@@ -21,6 +22,7 @@ class Light:
         self.id_to_look_for = 0
         self.in_sync = False
         self.staleness = 0
+        self.staleness_threshold = 1000
 
     async def connect(self):
         self.stream = await asyncio_dgram.connect((self.ip, self.port))
@@ -53,7 +55,12 @@ class Light:
         return message
 
     async def send_update(self):
-        if not self.in_sync: # or self.staleness >= 40:
+        if self.staleness >= self.staleness_threshold:
+            await self.stream.send(
+                bytes(self.generate_update_message(), "utf-8"))
+            self.staleness_threshold *= 2
+            self.staleness = 0
+        if not self.in_sync:
             await self.stream.send(
                 bytes(self.generate_update_message(), "utf-8"))
             self.staleness = 0
@@ -64,7 +71,7 @@ class Light:
         next_frame_time = time.perf_counter()
 
         while True:
-            next_frame_time += 0.025
+            next_frame_time += 0.05
             now = time.perf_counter()
             try:
                 data, remote_addr = await asyncio.wait_for(
@@ -85,10 +92,11 @@ class Light:
     def get_state(self):
         return self.state
 
-    def set_state(self, state):
+    def set_state(self, state, seriously=False):
         if self.state != state:
             self.previous_state = self.state
             self.in_sync = False
             self.id_of_last_change = self.next_message_id
             self.id_to_look_for = self.next_message_id
             self.state = state
+            self.staleness_threshold = 1 if seriously else 4

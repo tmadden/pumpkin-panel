@@ -7,6 +7,7 @@ from utilities import *
 
 from operator import add
 
+
 async def pulsate(lights):
     colors = list(Color("red").range_to(Color("yellow"), 12))
     for i in range(4):
@@ -16,10 +17,10 @@ async def pulsate(lights):
         colors.append(colors[-1])
 
     while True:
-        i = random.choice(range(16))
+        i = random.choice(range(24))
         j = i
         while i == j:
-            j = random.choice(range(16))
+            j = random.choice(range(24))
         loop = PeriodicLoop(0.1)
         # for b in range(6):
         #     for k in [i, j]:
