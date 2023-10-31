@@ -4,11 +4,13 @@ import random
 from utilities import *
 
 
-async def rain(lights):
+async def rain(lights, time_limit):
     column_states = [None] * 6
 
-    loop = PeriodicLoop(0.15)
-    while True:
+    loop = PeriodicLoop(0.15, time_limit)
+    while not loop.done():
+        colors = transition_colors()
+
         for i in range(6):
             for j in range(4):
                 light = lights[index((i, j))]
@@ -24,19 +26,19 @@ async def rain(lights):
                     state *= 2
                 else:
                     state = int(state / 2)
-                if state >= len(transition_colors()):
+                if state >= len(colors):
                     light.set_state(off_color())
                     continue
-                light.set_state(transition_colors()[state], seriously=True)
+                light.set_state(colors[state], seriously=True)
 
         active_columns = [i for i in range(6) if column_states[i] is not None]
         for i in active_columns:
-            if column_states[i] < 3 + len(transition_colors()):
+            if column_states[i] < 3 + len(colors):
                 column_states[i] += 1
             else:
                 column_states[i] = None
 
-        if random.random() < 0.1:
+        for _ in interaction_triggers(0.15):
             available_columns = [
                 i for i in range(6) if column_states[i] is None
             ]

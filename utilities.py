@@ -1,6 +1,7 @@
 import asyncio
 import math
 import time
+import random
 from dataclasses import dataclass
 
 from pywizlight.rgbcw import rgb2rgbcw
@@ -19,6 +20,33 @@ def clicks():
     new_clicks = mouse_clicks.copy()
     mouse_clicks.clear()
     return new_clicks
+
+
+last_interaction_time = None
+
+
+def reset_interaction():
+    global last_interaction_time
+    last_interaction_time = None
+
+
+def record_interaction():
+    global last_interaction_time
+    last_interaction_time = time.time()
+
+
+def user_is_interacting():
+    return last_interaction_time and time.time() - last_interaction_time < 10
+
+
+def interaction_triggers(probability):
+    if user_is_interacting():
+        return clicks()
+    else:
+        if random.random() < probability:
+            return [()]
+        else:
+            return []
 
 
 def index(p):
@@ -122,7 +150,7 @@ the_palettes = [
                 raw_rgb(255, 0, 32),
                 raw_rgb(255, 0, 0)
             ]),
-    Palette(off=raw_rgb(32, 32, 0),
+    Palette(off=raw_rgb(32, 16, 0),
             transition=[
                 cold_white, cold_white, warm_white,
                 raw_rgb(255, 255, 255),
@@ -133,8 +161,7 @@ the_palettes = [
             diverse=[
                 raw_rgb(255, 32, 0),
                 raw_rgb(255, 128, 0),
-                raw_rgb(255, 255, 0),
-                raw_rgb(255, 192, 0),
+                raw_rgb(255, 96, 0),
                 raw_rgb(192, 64, 0)
             ]),
     Palette(off=raw_rgb(32, 0, 32),

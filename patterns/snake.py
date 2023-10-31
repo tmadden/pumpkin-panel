@@ -6,7 +6,7 @@ from utilities import *
 from operator import add
 
 
-async def snake(lights):
+async def snake(lights, time_limit):
     background = off_color()
 
     head = [0, 0]
@@ -14,12 +14,16 @@ async def snake(lights):
     snake = []
     just_turned = False
 
+    max_length = 5
+
     for i in range(24):
         lights[i].set_state(background)
 
-    loop = PeriodicLoop(0.15)
+    loop = PeriodicLoop(0.15, time_limit)
     while not loop.done():
-        if len(snake) > 5:
+        colors = transition_colors()
+
+        if len(snake) >= max_length:
             tail = snake.pop(0)
             lights[index(tail)].set_state(background)
 
@@ -44,15 +48,9 @@ async def snake(lights):
         head, direction = new_head, new_direction
         snake.append(head)
 
-        if len(snake) > 0:
-            lights[index(snake[-1])].set_state(cold_white, seriously=True)
-        if len(snake) > 1:
-            lights[index(snake[-2])].set_state(cold_white)
-        if len(snake) > 2:
-            lights[index(snake[-3])].set_state(warm_white, seriously=True)
-        if len(snake) > 3:
-            lights[index(snake[-4])].set_state(raw_rgb(255, 255, 255))
-        if len(snake) > 4:
-            lights[index(snake[-5])].set_state(raw_rgb(255, 0, 0))
+        for i in range(max_length):
+            if len(snake) > i and i < len(colors):
+                lights[index(snake[-1 - i])].set_state(colors[i],
+                                                       seriously=(i < 2))
 
         await loop.next()
