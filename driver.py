@@ -30,8 +30,8 @@ async def pattern_rotator(lights, time_Limit=None):
 
     patterns = [
         Pattern(snake, 30, False),
-        Pattern(rain, 15, False),
         Pattern(twinkle, 15, False),
+        Pattern(rain, 15, False),
         Pattern(fairies, 15, False)
         # Pattern(connect_four, 20, True)
     ]
@@ -86,56 +86,14 @@ async def main():
                          *[light.comm_loop() for light in lights])
 
 
-# from pynput import keyboard, mouse
+import requests
 
-# mouse_controller = mouse.Controller()
-
-# last_right_click_time = 0
-
-# def on_move(x, y):
-#     utilities.mouse_position[0] += x
-#     utilities.mouse_position[1] += y
-#     if [x, y] != [0, 0]:
-#         mouse_controller.position = (0, 0)
-
-# def on_click(x, y, button, pressed):
-#     global last_right_click_time
-#     global current_palette_index
-
-#     current_time = time.time()
-
-#     if pressed:
-#         if button == mouse.Button.left:
-#             utilities.mouse_clicks.append(button)
-#             utilities.record_interaction()
-#         elif button == mouse.Button.right:
-#             time_since_last_right_click = current_time - last_right_click_time
-#             if time_since_last_right_click < 0.3:
-#                 current_palette_index = 0
-#             else:
-#                 current_palette_index = (current_palette_index +
-#                                          1) % len(the_palettes)
-#             utilities.set_active_palette(the_palettes[current_palette_index])
-
-#             last_right_click_time = current_time
-
-# mouse_listener = mouse.Listener(on_move=on_move,
-#                                 on_click=on_click,
-#                                 suppress=True)
-# mouse_listener.start()
-
-# def on_press(key):
-#     try:
-#         if key.char in pattern_keys:
-#             current_pattern = pattern_keys[key.char]
-#             interrupt_pattern_loop = True
-#         if key.char == "a":
-#             utilities.reset_interaction()
-#     except AttributeError:
-#         pass
-
-# keyboard_listener = keyboard.Listener(on_press=on_press)
-# keyboard_listener.start()
+while True:
+    try:
+        requests.get("http://192.168.8.1", timeout=1)
+        break
+    except:
+        continue
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

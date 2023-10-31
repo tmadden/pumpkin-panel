@@ -2,3 +2,4 @@ pywizlight
 pyyaml
 colour
 asyncio_dgram
+requests
