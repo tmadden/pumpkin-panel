@@ -8,17 +8,19 @@ async def main():
     with open("macs.yml", "r") as file:
         macs = yaml.safe_load(file)
 
-    bulbs = await discovery.discover_lights(broadcast_space="192.168.8.255", wait_time=20)
+    bulbs = await discovery.discover_lights(broadcast_space="192.168.8.255", wait_time=6)
 
-    # print(len(bulbs))
-    # for bulb in bulbs:
-    #     if bulb.mac not in macs:
-    #         print(bulb.mac)
+    print(len(bulbs))
+
+    for bulb in bulbs:
+        if bulb.mac not in macs:
+            print(bulb.mac)
+
     # print(yaml.dump([(bulb.ip, bulb.mac) for bulb in bulbs]))
 
     ips = []
     for mac in macs:
-        print(mac)
+        # print(mac)
         ips.append(next(bulb.ip for bulb in bulbs if bulb.mac == mac))
 
     with open('ips.yml', 'w') as file:
