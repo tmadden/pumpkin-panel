@@ -29,26 +29,23 @@ class Light:
 
     def generate_update_message(self):
         if self.state:
-            # if not self.previous_state:
             params = self.state
             if 'brightness' not in params:
                 params['brightness'] = 255
             params['state'] = True
+            params['speed'] = 100
             return json.dumps({
                 'method': 'setPilot',
                 'id': self.next_message_id,
                 'params': params
             })
-            # else:
-            #     message = PilotBuilder(rgb=(255, 255, 255),
-            #                         brightness=self.state).set_state_message(
-            #                             self.next_message_id)
         else:
             message = json.dumps({
                 'method': 'setPilot',
                 'id': self.next_message_id,
                 'params': {
-                    'state': False
+                    'state': False,
+                    'speed': 100
                 }
             })
         self.next_message_id += 1

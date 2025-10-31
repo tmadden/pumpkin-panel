@@ -49,12 +49,31 @@ def interaction_triggers(probability):
             return []
 
 
+light_count = 21
+
+
+def index_to_xy(i):
+    y = 0
+    offset = 0
+    width = 1
+    while offset + width <= i:
+        y += 1
+        offset += width
+        width += 1
+    x = i - offset
+    return (x, y)
+
 def index(p):
-    return p[1] * 6 + p[0]
+    y = p[1]
+    i = p[0]
+    while y > 0:
+        i += y
+        y -= 1
+    return i
 
 
 def in_bounds(p):
-    return p[0] >= 0 and p[0] < 6 and p[1] >= 0 and p[1] < 4
+    return p[0] >= 0 and p[0] <= p[1] and p[1] >= 0 and p[1] <= 5
 
 
 def flipped(v):
@@ -145,7 +164,7 @@ the_palettes = [
                 raw_rgb(128, 0, 0)
             ],
             diverse=[
-                raw_rgb(255, 128, 0),
+                raw_rgb(255, 32, 32),
                 raw_rgb(200, 0, 128),
                 raw_rgb(255, 0, 32),
                 raw_rgb(255, 0, 0)
