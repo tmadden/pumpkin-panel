@@ -1,64 +1,58 @@
-import time
 import random
 
 from utilities import *
 
-from operator import add
-
 
 async def snake(lights, time_limit):
     background = off_color()
+    colors = transition_colors()
+    max_length = min(5, len(colors))
 
-    head = (0, 0)
-    direction = (0, 1)
-    snake = []
+    for light in lights:
+        light.set_state(background)
 
-    max_length = 5
-
-    for i in range(21):
-        lights[i].set_state(background)
+    head = 0
+    direction = 1
+    body = []
 
     loop = PeriodicLoop(0.15, time_limit)
     while not loop.done():
         colors = transition_colors()
 
-        if len(snake) >= max_length:
-            tail = snake.pop(0)
-            lights[index(tail)].set_state(background)
+        if len(body) >= max_length:
+            tail = body.pop(0)
+            lights[tail].set_state(background)
 
-        possible_directions = []
-        direction_weights = []
-        for dir in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1)]:
-            weight = 1
+        candidates = []
+        weights = []
 
-            new_head = tuple(map(add, head, dir))
-            if not in_bounds(new_head):
-                continue
-
-            # Don't turn back on yourself.
-            if equal(dir, flipped(direction)):
-                continue
-
-            # Prefer to avoid hitting yourself.
-            if lights[index(new_head)].get_state() != background:
+        for delta in (-1, 1):
+            nxt = step_front(head, delta)
+            weight = 10 if delta == direction else 1
+            if lights[nxt].get_state() != background:
                 weight /= 100
-            # Add a bias towards going straight.
-            if equal(dir, direction):
-                weight *= 10
+            candidates.append((nxt, delta))
+            weights.append(weight)
 
-            possible_directions.append(dir)
-            direction_weights.append(weight)
-        new_direction = random.choices(possible_directions, weights=direction_weights)[0]
-        new_head = tuple(map(add, head, new_direction))
+        outer = back_for(head)
+        if outer is not None and lights[outer].get_state() == background:
+            candidates.append((outer, direction))
+            weights.append(0.5)
 
-        just_turned = not equal(direction, new_direction)
+        if is_back(head):
+            front = front_for_back(head)
+            if lights[front].get_state() == background:
+                candidates.append((front, direction))
+                weights.append(2)
+
+        choice_i = random.choices(range(len(candidates)), weights=weights)[0]
+        new_head, new_direction = candidates[choice_i]
 
         head, direction = new_head, new_direction
-        snake.append(head)
+        body.append(head)
 
         for i in range(max_length):
-            if len(snake) > i and i < len(colors):
-                lights[index(snake[-1 - i])].set_state(colors[i],
-                                                       seriously=(i < 2))
+            if len(body) > i and i < len(colors):
+                lights[body[-1 - i]].set_state(colors[i], seriously=(i < 2))
 
         await loop.next()

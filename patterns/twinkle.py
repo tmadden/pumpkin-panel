@@ -18,7 +18,7 @@ async def twinkle(lights, time_limit):
 
     states = [
         State(twinkle_index=None, background_index=random.randint(0, 119))
-        for _ in range(21)
+        for _ in range(light_count)
     ]
 
     loop = PeriodicLoop(0.02, time_limit)
@@ -26,7 +26,7 @@ async def twinkle(lights, time_limit):
         transitions = transition_colors()
         diversity = diverse_palette()
 
-        for i in range(21):
+        for i in range(light_count):
             state = states[i]
             if state.twinkle_index is not None and state.twinkle_index < len(
                     transitions) * 3:
@@ -37,11 +37,12 @@ async def twinkle(lights, time_limit):
                 lights[i].set_state(diversity[state.background_index %
                                               len(diversity)])
 
-        states[random.randint(0, 20)].background_index = random.randint(0, 119)
+        states[random.randint(0, light_count - 1)].background_index = (
+            random.randint(0, 119))
 
         for _ in interaction_triggers(0.05):
             for _ in range(3):
-                index = random.randint(0, 20)
+                index = random.randint(0, light_count - 1)
                 if states[index].twinkle_index is None:
                     states[index].twinkle_index = 0
 

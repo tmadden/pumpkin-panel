@@ -3,3 +3,5 @@ pyyaml
 colour
 asyncio_dgram
 requests
+pygame
+

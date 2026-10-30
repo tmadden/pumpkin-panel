@@ -4,7 +4,13 @@ import time
 import random
 from dataclasses import dataclass
 
-from pywizlight.rgbcw import rgb2rgbcw
+try:
+    from pywizlight.rgbcw import rgb2rgbcw
+except ImportError:
+    # Visualizer / offline use — rgb() falls back to plain RGB
+    def rgb2rgbcw(rgb_tuple):
+        return rgb_tuple, None
+
 
 mouse_position = [0, 0]
 
@@ -49,39 +55,94 @@ def interaction_triggers(probability):
             return []
 
 
-light_count = 21
+# Circle layout: N front pumpkins, M virtual entrance slots, optional outer backs.
+# lights[0 .. N-1] = front ring (CW from just after the entrance)
+# lights[N .. N+B-1] = outer tier, parallel to BACK_OF front indices
+# Tweak these for the physical setup; total should match ips.yml length.
+FRONT_COUNT = 16  # N
+ENTRANCE_SLOTS = 3  # M
+BACK_OF = [0, 5, 10, 15]  # front indices with a pumpkin outside them
+
+front_count = FRONT_COUNT
+entrance_slots = ENTRANCE_SLOTS
+slot_count = FRONT_COUNT + ENTRANCE_SLOTS
+light_count = FRONT_COUNT + len(BACK_OF)
 
 
-def index_to_xy(i):
-    y = 0
-    offset = 0
-    width = 1
-    while offset + width <= i:
-        y += 1
-        offset += width
-        width += 1
-    x = i - offset
-    return (x, y)
-
-def index(p):
-    y = p[1]
-    i = p[0]
-    while y > 0:
-        i += y
-        y -= 1
-    return i
+def is_front(light_i):
+    return 0 <= light_i < FRONT_COUNT
 
 
-def in_bounds(p):
-    return p[0] >= 0 and p[0] <= p[1] and p[1] >= 0 and p[1] <= 5
+def is_back(light_i):
+    return FRONT_COUNT <= light_i < light_count
 
 
-def flipped(v):
-    return [-v[0], -v[1]]
+def back_for(front_i):
+    """Light index of the outer pumpkin behind front_i, or None."""
+    try:
+        return FRONT_COUNT + BACK_OF.index(front_i)
+    except ValueError:
+        return None
 
 
-def equal(a, b):
-    return round(a[0]) == round(b[0]) and round(a[1]) == round(b[1])
+def front_for_back(light_i):
+    """Front index paired with a back-tier light."""
+    return BACK_OF[light_i - FRONT_COUNT]
+
+
+def light_to_slot(light_i):
+    if is_front(light_i):
+        return light_i
+    return front_for_back(light_i)
+
+
+def slot_to_front(slot):
+    """Front light index for an occupied slot, or None for the entrance."""
+    if 0 <= slot < FRONT_COUNT:
+        return slot
+    return None
+
+
+def slot_occupied(slot):
+    return slot_to_front(slot) is not None
+
+
+def step_front(front_i, delta):
+    """Move ±1 (or more) along the front ring, skipping the entrance arc."""
+    slot = light_to_slot(front_i)
+    for _ in range(slot_count):
+        slot = (slot + delta) % slot_count
+        front = slot_to_front(slot)
+        if front is not None:
+            return front
+    raise RuntimeError("no front pumpkins")
+
+
+def front_neighbors(front_i):
+    return [step_front(front_i, -1), step_front(front_i, 1)]
+
+
+def neighbors(light_i):
+    """Adjacent lights for effects: ring neighbors, plus front/back pairs."""
+    result = []
+    if is_front(light_i):
+        result.extend(front_neighbors(light_i))
+        outer = back_for(light_i)
+        if outer is not None:
+            result.append(outer)
+    else:
+        result.append(front_for_back(light_i))
+    return result
+
+
+def slot_theta(slot):
+    """Math angle (CCW from +x); entrance arc centered at the bottom."""
+    mid_entrance = FRONT_COUNT + (ENTRANCE_SLOTS - 1) / 2.0
+    return 1.5 * math.pi + 2 * math.pi * (slot - mid_entrance) / slot_count
+
+
+def light_theta(light_i):
+    return slot_theta(light_to_slot(light_i))
 
 
 def reset_all(lights):
