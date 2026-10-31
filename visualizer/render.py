@@ -47,13 +47,15 @@ def _lerp_rgb(a, b, t):
 
 def display_color(state):
     """Map a WiZ pilot state to on-screen pumpkin color."""
+    # Fully off (None) = black. Palette "off" is a dim RGB and should read as a
+    # faint lit pumpkin, not black.
     if state is None:
-        return tuple(int(c * 0.18) for c in PUMPKIN_RGB)
+        return (0, 0, 0)
 
     brightness = state.get('brightness', 255) / 255.0
     r, g, b = state_to_rgb(state)
     if r == g == b == 0:
-        return tuple(int(c * 0.18) for c in PUMPKIN_RGB)
+        return (0, 0, 0)
 
     # Orange gel for the color LEDs
     lum = (0.35 * r + 0.55 * g + 0.10 * b) / 255.0
@@ -73,7 +75,14 @@ def display_color(state):
     wash = min(1.0, white_led * 1.15 + rgb_whiteness * 0.75)
 
     glow = tuple(int(c * max(lum, white_led)) for c in GLOW_WHITE)
-    return _lerp_rgb(gelled, glow, wash)
+    color = _lerp_rgb(gelled, glow, wash)
+
+    # Dim palette "off" colors: keep a readable pumpkin glow
+    if white_led < 0.05 and peak < 0.2:
+        dim_shell = tuple(int(c * 0.28) for c in PUMPKIN_RGB)
+        return _lerp_rgb(dim_shell, color, 0.35)
+
+    return color
 
 
 def _xy(theta, radius, cx, cy):

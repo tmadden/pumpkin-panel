@@ -145,6 +145,63 @@ def light_theta(light_i):
     return slot_theta(light_to_slot(light_i))
 
 
+def rank_count():
+    """Number of ranks from the entrance up to the far side of the ring."""
+    return math.ceil(FRONT_COUNT / 2)
+
+
+def front_rank(front_i):
+    """0 at the entrance edges, rising toward the back of the circle."""
+    return min(front_i, FRONT_COUNT - 1 - front_i)
+
+
+def light_rank(light_i):
+    if is_front(light_i):
+        return front_rank(light_i)
+    return front_rank(front_for_back(light_i))
+
+
+def pumpkins_at_rank(rank, include_back=True):
+    """Light indices at a given rank (both sides of the circle)."""
+    result = []
+    for i in range(FRONT_COUNT):
+        if front_rank(i) == rank:
+            result.append(i)
+            if include_back:
+                outer = back_for(i)
+                if outer is not None:
+                    result.append(outer)
+    return result
+
+
+def ranks(include_back=True):
+    """List of bins: ranks[r] = pumpkins_at_rank(r)."""
+    return [pumpkins_at_rank(r, include_back) for r in range(rank_count())]
+
+
+def rank_bins_ascent(include_back=True):
+    """Entrance → back (no return)."""
+    return ranks(include_back)
+
+
+def rank_bins_descent(include_back=True):
+    """Back → entrance (no return)."""
+    return list(reversed(ranks(include_back)))
+
+
+def rank_bins_loop(include_back=True):
+    """Entrance → back → entrance. Peak rank appears once; lower ranks twice."""
+    ascent = ranks(include_back)
+    if len(ascent) <= 1:
+        return ascent
+    return ascent + list(reversed(ascent[:-1]))
+
+
+def on_color_for(light_i):
+    """Cold white on the front ring, warm white on the outer tier."""
+    return warm_white if is_back(light_i) else cold_white
+
+
 def reset_all(lights):
     for light in lights:
         light.set_state(off)

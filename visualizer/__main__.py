@@ -1,7 +1,9 @@
 """Run with:  python -m visualizer
 
-Optional pattern key:  python -m visualizer t
-  s=snake  t=twinkle  f=fairies  a=rotator  p=progression
+Optional pattern key:  python -m visualizer m
+  m=embers  d=dual_arcs  o=opposites  r=rank_breathe  l=rank_fill
+  w=doorway  n=entrance  k=backbeat  b=orbit  u=bullets
+  t=twinkle  f=fairies  p=progression  a=rotator
 """
 
 import asyncio
@@ -32,7 +34,7 @@ async def main():
                   flush=True)
             return
     else:
-        print("Pattern: rotator (pass s/t/f/a/p to pick one)", flush=True)
+        print("Pattern: rotator (pass m/d/o/r/l/w/n/k/b/a…)", flush=True)
 
     print("Visualizer — layout from utilities.py (esc / close window to quit)",
           flush=True)
